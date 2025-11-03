@@ -86,6 +86,12 @@ int createLeafNodes(int freq[]) {
 // Step 3: Build the encoding tree using heap operations
 int buildEncodingTree(int nextFree) {
     // TODO:
+    if (nextFree==0) { //if nextFree is equal to 0, it is empty, and return -1
+        return -1;
+    }
+    else if (nextFree==1) { //if nextFree is equal to 1, there is only one node at 0.
+        return 0;
+    }
     //creates minHeap object
     MinHeap *minHeap = new MinHeap();
     //leaf node indices pushed into heap
@@ -121,6 +127,11 @@ void generateCodes(int root, string codes[]) {
     int current;
     string currentString;
     char currentChar;
+    if (leftArr[root] == -1 && rightArr[root] == -1) { //if the root is the only node, then set codes[charArr[root]] to 0 and return.
+        currentChar = charArr[root];
+        codes[currentChar - 'a'] = "0";
+        return;
+    }
     // Left edge adds '0', right edge adds '1'.
     while (!codesStack.empty()) {
         current = codesStack.top().first; //holds the current index
