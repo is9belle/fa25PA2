@@ -86,31 +86,29 @@ int createLeafNodes(int freq[]) {
 // Step 3: Build the encoding tree using heap operations
 int buildEncodingTree(int nextFree) {
     // TODO:
-    // 1. Create a MinHeap object.
+    //creates minHeap object
     MinHeap *minHeap = new MinHeap();
-    // 2. Push all leaf node indices into the heap.
+    //leaf node indices pushed into heap
     for (int i = 0; i<nextFree; i++) {
         minHeap->push(i,weightArr);
     }
-    // 3. While the heap size is greater than 1:
-    //    - Pop two smallest nodes
-    //    - Create a new parent node with combined weight
-    //    - Set left/right pointers
-    //    - Push new parent index back into the heap
+
+    //while size > 1, so when there is more than just the one root
     while (minHeap->size > 1) {
         int smallest1 = minHeap->pop(weightArr);
         int smallest2 = minHeap->pop(weightArr);
 
+        //creates parent node with combines weight of two smallest
         int parent = weightArr[smallest1] + weightArr[smallest2];
-        weightArr[nextFree] = parent;
-        leftArr[nextFree] = smallest1;
-        rightArr[nextFree] = smallest2;
-        charArr[nextFree] = ' ';
-        minHeap->push(nextFree, weightArr);
+        weightArr[nextFree] = parent; //sets parent weight
+        leftArr[nextFree] = smallest1; //sets left child pointer w/ index
+        rightArr[nextFree] = smallest2; //sets right child pointer
+        charArr[nextFree] = ' '; //placeholder
+        minHeap->push(nextFree, weightArr); //push next free index into the heap using weights
         nextFree++;
     }
-    // 4. Return the index of the last remaining node (root)
-    return minHeap->pop(weightArr); // placeholder
+    //returns the index of the last remaining node (root)
+    return minHeap->pop(weightArr);
 }
 
 // Step 4: Use an STL stack to generate codes
@@ -122,19 +120,20 @@ void generateCodes(int root, string codes[]) {
 
     int current;
     string currentString;
+    char currentChar;
     // Left edge adds '0', right edge adds '1'.
     while (!codesStack.empty()) {
-        current = codesStack.top().first;
-        currentString = codesStack.top().second;
+        current = codesStack.top().first; //holds the current index
+        currentString = codesStack.top().second; //holds the current code string
         codesStack.pop();
         if (leftArr[current] == -1 && rightArr[current] == -1) { //if it is a leaf node, record the code
-            char currentChar = charArr[current];
+            currentChar = charArr[current]; //find the currentChar using the previous array holding the characters that correspond to the index
             if (currentChar>='a' && currentChar<='z') {
-                codes[currentChar - 'a'] = currentString;
+                codes[currentChar - 'a'] = currentString; //put the code string into the corresponding codes array, not according to index b/c encode message loops through all 26 letters instead of using indexes
             }
         }
         else { //if it is not a leaf, then push to children
-            if (rightArr[current] != -1) {
+            if (rightArr[current] != -1) { //if it has a right child, push its index in and add 1 to count the right edge
                 codesStack.push({rightArr[current], currentString+"1"});
             }
             if (leftArr[current] != -1) {
